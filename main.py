@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pytchat
 
 # --- 💀 GLOBAL CONFIG 💀 ---
-STREAM_KEY = "hjke-9tf7-69sj-89gk-aatz" # Teri key maine repair kar di hai
+STREAM_KEY = "pv92-p957-980h-3zpy-a5p6" # Teri key maine repair kar di hai
 LIVE_VIDEO_ID = "5of2o7kJRvg" # ISKO HAR BAAR CHECK KARNA
 YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/"
 MY_CHANNEL_URL = "https://www.youtube.com/@SHEHZAD_PLAYZ"
