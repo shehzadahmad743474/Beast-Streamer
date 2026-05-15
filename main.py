@@ -2,110 +2,122 @@ import os
 import subprocess
 import threading
 import time
-import re
+import pytchat
 
-# --- 💀 BEASTGPT NAKED CONFIGURATION 💀 ---
-# TUNE KAHA THA KUCH HIDE MAT KARNA. TOH YE LE.
+# --- 💀 NAKED SECRETS 💀 ---
 STREAM_KEY = "pv92-p957-980h-3zpy-a5p6"
 LIVE_VIDEO_ID = "owsv6D0MvnBNcFLZ"
 YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/"
 
-# Default video jo stream start hone par chalegi (jab tak koi link na bheje)
-# Ye NoCopyrightSounds ka ek video hai.
-DEFAULT_YT_URL = "https://www.youtube.com/watch?v=jfKfPfyJRdk" 
+# Globals for Queue System
+user_queue = []
+current_target = "NO ONE. SEND A MESSAGE!"
 
-# Globals
-current_media_url = ""
-stream_process = None
+def update_ui_files():
+    """Ye function har second text files update karega jise FFmpeg live screen par kheechega"""
+    while True:
+        try:
+            # Current User File
+            with open("current.txt", "w", encoding="utf-8") as f:
+                f.write(f"👉 NOW SHOWING 👈\n\n {current_target.upper()} ")
+            
+            # Queue File
+            q_text = "⏳ WAITING LIST:\n\n"
+            if len(user_queue) == 0:
+                q_text += "Empty. Type in chat to join!"
+            else:
+                for i, u in enumerate(user_queue[:5]): # Top 5 log screen par dikhenge
+                    q_text += f"{i+1}. {u}\n"
+            
+            with open("queue.txt", "w", encoding="utf-8") as f:
+                f.write(q_text)
+                
+            time.sleep(1)
+        except:
+            pass
 
-def get_raw_url(youtube_url):
-    import yt_dlp
-    print(f"[*] Extracting raw feed from: {youtube_url}")
-    ydl_opts = {'format': 'best[ext=mp4]/best', 'quiet': True, 'nocheckcertificate': True}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(youtube_url, download=False)
-        return info['url']
+def queue_manager():
+    """Ye queue chalayega, har user ko screen par 30 seconds dega"""
+    global current_target, user_queue
+    while True:
+        if len(user_queue) > 0:
+            current_target = user_queue.pop(0)
+            print(f"[*] Spotlight on: {current_target}")
+            time.sleep(30) # 30 Second tak screen par rahega
+        else:
+            current_target = "SEND ANY MESSAGE TO JOIN!"
+            time.sleep(5)
 
 def chat_sniper():
-    global current_media_url, stream_process
-    import pytchat
-    print("💀 Chat Sniper Active. Listening to YouTube Chat...")
-
+    """Ye chat padhega aur nayi entries ko line mein lagayega"""
+    global user_queue
+    print("💀 Chat Sniper Active. Monitoring Live Chat...")
     while True:
         try:
             chat = pytchat.create(video_id=LIVE_VIDEO_ID, interruptable=False)
             while chat.is_alive():
                 for c in chat.get().sync_items():
-                    msg = c.message
-                    # Dhoondo agar kisi ne YouTube link bheja hai
-                    urls = re.findall(r'(https?://(?:www\.)?youtu\.?be[^\s]+|https?://(?:www\.)?youtube\.com/watch\?v=[^\s]+)', msg)
-
-                    if urls:
-                        target_url = urls[0]
-                        print(f"\n🔥 COMMAND RECEIVED FROM CHAT: {c.author.name}")
-                        print(f"🔥 Hijacking Stream to: {target_url}")
-                        try:
-                            # Naya URL extract karo
-                            new_url = get_raw_url(target_url)
-                            current_media_url = new_url
-                            
-                            # Purane stream process ko goli maar do
-                            if stream_process:
-                                print("[!] Killing old stream. Injecting new video...")
-                                stream_process.terminate()
-                                stream_process.wait()
-                        except Exception as e:
-                            print(f"[-] Extraction Failed (Video restricted/Live?): {e}")
+                    author = c.author.name
+                    print(f"💬 Chat from {author}: {c.message}")
+                    
+                    # Agar user line mein nahi hai, toh add karo
+                    if author not in user_queue and author != current_target:
+                        user_queue.append(author)
+                        print(f"[+] Added {author} to Queue. Queue size: {len(user_queue)}")
         except Exception as e:
-            print(f"[-] Sniper Error: {e}")
-            time.sleep(5)
+            print(f"[-] Chat Disconnected. Retrying... {e}")
+            time.sleep(10)
 
 def stream_engine():
-    global stream_process, current_media_url
-    print("💀 Beast Encoder Online.")
+    """BeastGPT Dynamic Video Generator"""
+    print("💀 Master Encoder Online. Generating Dynamic UI...")
     
-    # Start with default video
-    try:
-        current_media_url = get_raw_url(DEFAULT_YT_URL)
-    except:
-        pass # Agar fail hua toh chat aane ka wait karega
+    # 1. Hum FFmpeg se ek Virtual Black Video create kar rahe hain (color=c=black)
+    # 2. Virtual Silent Audio (aevalsrc=exprs=0)
+    # 3. drawtext filter un text files ko padhkar real-time video par chipkayega!
+    
+    ffmpeg_cmd = [
+        "ffmpeg",
+        "-re",
+        "-f", "lavfi", "-i", "color=c=black:s=1280x720:r=30",  # Fake background
+        "-f", "lavfi", "-i", "aevalsrc=exprs=0",               # Fake audio
+        "-vf", (
+            "drawtext=text='🔥 LIVE CHANNEL PROMOTION & QUEUE 🔥':fontcolor=lime:fontsize=45:x=(w-tw)/2:y=50:box=1:boxcolor=black@0.8:boxborderw=10,"
+            "drawtext=textfile='current.txt':reload=1:fontcolor=yellow:fontsize=60:x=(w-tw)/2:y=250:box=1:boxcolor=red@0.5:boxborderw=15,"
+            "drawtext=textfile='queue.txt':reload=1:fontcolor=white:fontsize=35:x=50:y=450:box=1:boxcolor=blue@0.4:boxborderw=10"
+        ),
+        "-c:v", "libx264",
+        "-preset", "ultrafast",
+        "-b:v", "1500k",
+        "-maxrate", "1500k",
+        "-bufsize", "3000k",
+        "-pix_fmt", "yuv420p",
+        "-g", "60",
+        "-c:a", "aac",
+        "-b:a", "128k",
+        "-ar", "44100",
+        "-f", "flv",
+        f"{YOUTUBE_RTMP}{STREAM_KEY}"
+    ]
 
     while True:
-        if not current_media_url:
-            time.sleep(2)
-            continue
-            
         try:
-            # GitHub ka CPU strong hota hai, hum 720p re-encode maarenge 
-            # Taki resolutions change hone par YouTube crash na ho.
-            ffmpeg_cmd = [
-                "ffmpeg",
-                "-re",
-                "-i", current_media_url,
-                "-c:v", "libx264",
-                "-preset", "ultrafast",
-                "-b:v", "2500k",
-                "-maxrate", "2500k",
-                "-bufsize", "5000k",
-                "-s", "1280x720", # FORCE 720p HD
-                "-g", "60",
-                "-c:a", "aac",
-                "-b:a", "128k",
-                "-ar", "44100",
-                "-f", "flv",
-                f"{YOUTUBE_RTMP}{STREAM_KEY}"
-            ]
-
-            stream_process = subprocess.Popen(ffmpeg_cmd)
-            stream_process.wait()
-            print("[!] Stream Ended or Interrupted. Auto-Restarting...")
-            time.sleep(2)
-        except Exception as e:
-            print(f"[-] Encoder Error: {e}")
+            subprocess.run(ffmpeg_cmd)
+            print("[!] Stream Drop. Restarting Engine...")
+            time.sleep(3)
+        except:
             time.sleep(3)
 
 if __name__ == "__main__":
-    print("=== BEASTGPT NAKED INTERACTIVE ENGINE ===")
-    # Dono kaam ek sath shuru karo (Chat padhna aur Stream karna)
+    print("=== BEASTGPT INTERACTIVE MATRIX ===")
+    # Create files so FFmpeg doesn't crash on start
+    open("current.txt", "w").close()
+    open("queue.txt", "w").close()
+    
+    # Start all threads
+    threading.Thread(target=update_ui_files, daemon=True).start()
+    threading.Thread(target=queue_manager, daemon=True).start()
     threading.Thread(target=chat_sniper, daemon=True).start()
+    
+    # Run Stream
     stream_engine()
