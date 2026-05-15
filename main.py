@@ -11,7 +11,7 @@ import pytchat
 # --- 💀 NAKED HARDCODED CONFIG 💀 ---
 STREAM_KEY = "m2bb-e8t6-ztt9-1fs0-8j5x" 
 # 🔴 IS ID KO HAR BAAR CHANGE KARNA HAI (Dhyan se dekh URL mein)
-LIVE_VIDEO_ID = "5of2o7kJRvg" 
+LIVE_VIDEO_ID = "thOhUHbZJCg" 
 YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/"
 MY_CHANNEL_URL = "https://www.youtube.com/@SHEHZAD_PLAYZ"
 
