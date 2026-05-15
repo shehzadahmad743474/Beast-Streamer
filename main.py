@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pytchat
 
 # --- 💀 NAKED HARDCODED CONFIG 💀 ---
-STREAM_KEY = "pv92-p957-980h-3zpy-a5p6" 
+STREAM_KEY = "m2bb-e8t6-ztt9-1fs0-8j5x" 
 # 🔴 IS ID KO HAR BAAR CHANGE KARNA HAI (Dhyan se dekh URL mein)
 LIVE_VIDEO_ID = "5of2o7kJRvg" 
 YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/"
