@@ -8,13 +8,12 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import pytchat
 
-# --- 💀 PRO STATION CONFIG 💀 ---
+# --- 💀 GLOBAL CONFIG 💀 ---
 STREAM_KEY = "pv92-p957-980h-3zpy-a5p6"
 LIVE_VIDEO_ID = "5of2o7kJRvg" # <--- HAR BAAR CHECK KARNA
 YOUTUBE_RTMP = "rtmp://a.rtmp.youtube.com/live2/"
 MY_CHANNEL_URL = "https://www.youtube.com/@SHEHZAD_PLAYZ"
 
-# Data Matrix
 user_queue = [] 
 promoted_ids = set() 
 session_start = datetime.now()
@@ -23,10 +22,10 @@ total_promoted = 0
 def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
 
-# --- 1. CHAT SNIPER (V6 - NEURAL SCAN) ---
+# --- 1. CHAT SNIPER (V7) ---
 def chat_sniper():
     global user_queue
-    log("💀 Neural Sniper Online...")
+    log("💀 Sniper Matrix v7 Active...")
     while True:
         try:
             chat = pytchat.create(video_id=LIVE_VIDEO_ID, interruptable=False)
@@ -38,55 +37,70 @@ def chat_sniper():
                     
                     if author_id not in promoted_ids and not any(u[2] == author_id for u in user_queue):
                         user_queue.append([author_name, channel_url, author_id])
-                        log(f"🧬 QUEUED CREATOR: {author_name}")
+                        log(f"🧬 QUEUE UPDATED: {author_name}")
             time.sleep(5)
         except:
             time.sleep(10)
 
-# --- 2. OVERLAY INJECTOR (PUSHES CONTENT DOWN TO SHOW LOGO) ---
-def inject_ui(driver, title, timer_sec=30, mode="PROMO"):
+# --- 2. MASTER UI INJECTOR (Supports both HUB and PROMO) ---
+def inject_beast_ui(driver, title, timer_sec=30, mode="PROMO"):
+    uptime = str(datetime.now() - session_start).split('.')[0]
     queue_html = "".join([f"<div class='q-item'>{u[0]}</div>" for u in user_queue[:5]])
-    if not queue_html: queue_html = "<div class='q-item' style='color:gray'>Waiting for new voices...</div>"
+    if not queue_html: queue_html = "<div class='q-item' style='color:gray'>Waiting for chat...</div>"
     
+    # CSS & HTML Matrix
     ui_script = f"""
     (function() {{
         if (window.trustedTypes && window.trustedTypes.createPolicy && !window.beastPolicy) {{
             window.beastPolicy = window.trustedTypes.createPolicy('beastPolicy', {{ createHTML: (s) => s }});
         }}
         
-        // PUSH YOUTUBE CONTENT DOWN SO LOGO IS VISIBLE
+        var ui = document.getElementById('beast-main-ui');
+        if(ui) ui.remove();
+
+        // LOGO POSITION FIX
         if ("{mode}" == "PROMO") {{
-            document.body.style.paddingTop = "180px";
-            var masthead = document.getElementById('masthead-container');
-            if(masthead) masthead.style.top = "150px";
+            document.body.style.paddingTop = "200px";
+            document.body.style.background = "#000";
+        }} else {{
+            document.body.style.paddingTop = "0";
+            document.body.style.background = "#050505";
         }}
 
-        var ui = document.getElementById('beast-ui');
-        if(ui) ui.remove();
-        
         var container = document.createElement('div');
-        container.id = 'beast-ui';
-        container.style = 'position:fixed; top:0; left:0; width:100%; height:150px; z-index:9999999; pointer-events:none; font-family:sans-serif; background:rgba(0,0,0,0.9); border-bottom: 5px solid {"#00E5FF" if mode=="PROMO" else "#FFD700"}; box-shadow:0 0 20px rgba(0,255,255,0.5);';
+        container.id = 'beast-main-ui';
+        container.style = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999999; pointer-events:none; font-family:monospace;';
         
         var content = `
             <style>
-                .top-box {{ display:flex; justify-content:space-between; align-items:center; padding: 20px 40px; height:100%; }}
-                .title-txt {{ font-size: 45px; color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
-                .t-yellow {{ color: #FFFF00; font-size: 70px; font-weight: bold; font-family: monospace; }}
-                .q-panel {{ position: fixed; top: 200px; left: 20px; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; width: 400px; border-left: 8px solid #00E5FF; backdrop-filter: blur(10px); }}
-                .q-head {{ color: #00E5FF; font-size: 30px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; }}
-                .q-item {{ color: #EEE; font-size: 25px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-                .footer-box {{ position: fixed; bottom: 0; width: 100%; background: linear-gradient(90deg, #FF0000, #990000, #FF0000); color: white; padding: 15px; text-align: center; font-size: 32px; font-weight: bold; }}
+                .top-bar {{ background:rgba(0,0,0,0.95); border-bottom:6px solid cyan; padding:30px; text-align:center; box-shadow:0 10px 40px rgba(0,255,255,0.3); }}
+                .status-txt {{ font-size:50px; color:white; font-weight:bold; text-transform:uppercase; letter-spacing:3px; }}
+                .timer-txt {{ font-size:110px; color:#FFFF00; font-weight:bold; text-shadow:0 0 20px rgba(255,255,0,0.5); }}
+                .stats-panel {{ position:absolute; top:250px; left:30px; background:rgba(0,0,0,0.9); padding:30px; border-radius:20px; border-left:15px solid lime; width:450px; }}
+                .st-label {{ color:lime; font-size:35px; font-weight:bold; margin-bottom:10px; }}
+                .q-item {{ color:white; font-size:30px; margin-bottom:8px; border-bottom:1px solid #333; }}
+                .hub-center {{ position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; width:90%; {"display:none;" if mode=="PROMO" else "display:block;"} }}
+                .hub-title {{ font-size:100px; color:cyan; border:8px solid cyan; padding:40px; border-radius:30px; animation: glow 1s infinite alternate; }}
+                .footer {{ position:absolute; bottom:0; width:100%; background:linear-gradient(90deg, #FF0000, #000, #FF0000); color:white; padding:25px; text-align:center; font-size:38px; font-weight:bold; }}
+                @keyframes glow {{ from{{box-shadow:0 0 20px cyan;}} to{{box-shadow:0 0 50px cyan;}} }}
             </style>
-            <div class="top-box">
-                <div class="title-txt">{title}</div>
-                <div class="t-yellow" id="b-timer">{timer_sec}s</div>
+            <div class="top-bar">
+                <div class="status-txt">{title}</div>
+                <div class="timer-txt" id="b-timer">{timer_sec}s</div>
             </div>
-            <div class="q-panel">
-                <div class="q-head">UP NEXT:</div>
+            <div class="stats-panel">
+                <div class="st-label">NEXT IN LINE:</div>
                 {queue_html}
+                <div style="margin-top:20px;">
+                    <div class="st-label" style="color:cyan">UPTIME: {uptime}</div>
+                    <div class="st-label" style="color:orange">PROMOTED: {total_promoted}</div>
+                </div>
             </div>
-            <div class="footer-box">🔥 LIKE & SUBSCRIBE TO STAY IN QUEUE! 🔥</div>
+            <div class="hub-center">
+                <div class="hub-title">NEURAL HUB v13</div>
+                <h2 style="font-size:50px; color:white; margin-top:40px;">SCANNING FOR NEXT CREATOR...</h2>
+            </div>
+            <div class="footer">🔥 SUBSCRIBE & TYPE IN CHAT TO JOIN THE QUEUE 🔥</div>
         `;
 
         container.innerHTML = window.beastPolicy ? window.beastPolicy.createHTML(content) : content;
@@ -102,12 +116,12 @@ def inject_ui(driver, title, timer_sec=30, mode="PROMO"):
     }})();
     """
     try: driver.execute_script(ui_script)
-    except: pass
+    except Exception as e: log(f"UI Injection Error: {e}")
 
-# --- 3. THE MASTER CONTROLLER ---
+# --- 3. BROWSER CONTROLLER ---
 def browser_controller():
     global user_queue, promoted_ids, total_promoted
-    log("💀 Neural Browser Hub Booting...")
+    log("💀 Matrix Studio Starting...")
     
     opts = webdriver.ChromeOptions()
     opts.add_argument('--no-sandbox')
@@ -117,66 +131,42 @@ def browser_controller():
     opts.add_argument('--force-dark-mode')
     
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
-    
+
     while True:
         try:
-            # --- 📡 THE HUB DASHBOARD (Visual Masterpiece) ---
-            uptime = str(datetime.now() - session_start).split('.')[0]
-            DASHBOARD_HTML = f"""data:text/html,<html><head>
-                <style>
-                    body {{ background: #050505; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }}
-                    .container {{ border: 10px solid #00E5FF; padding: 60px; border-radius: 50px; background: rgba(0,229,255,0.05); box-shadow: 0 0 50px rgba(0,229,255,0.2); text-align: center; width: 80%; }}
-                    h1 {{ font-size: 90px; color: #00E5FF; text-transform: uppercase; margin: 0; letter-spacing: 5px; text-shadow: 0 0 20px #00E5FF; }}
-                    .stats-box {{ display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 50px; }}
-                    .stat {{ font-size: 50px; background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; }}
-                    .label {{ color: #FFD700; display: block; font-size: 30px; margin-bottom: 10px; }}
-                    .scan {{ color: lime; font-size: 40px; margin-top: 40px; animation: pulse 1s infinite; }}
-                    @keyframes pulse {{ 0%{{opacity:1;}} 50%{{opacity:0.5;}} 100%{{opacity:1;}} }}
-                </style></head><body>
-                <div class="container">
-                    <h1>BEAST NEURAL HUB</h1>
-                    <div class="stats-box">
-                        <div class="stat"><span class="label">SYSTEM UPTIME</span> {uptime}</div>
-                        <div class="stat"><span class="label">TOTAL PROMOTIONS</span> {total_promoted}</div>
-                        <div class="stat"><span class="label">QUEUED CREATORS</span> {len(user_queue)}</div>
-                    </div>
-                    <div class="scan">● SEARCHING FOR NEXT CREATOR...</div>
-                </div>
-            </body></html>"""
-
             if len(user_queue) > 0:
-                # 1. SHOW HUB (5s)
-                driver.get(DASHBOARD_HTML)
-                inject_ui(driver, "SYNCHRONIZING MATRIX", timer_sec=5, mode="HUB")
+                # TRANSITION (5s)
+                driver.get("about:blank") # Clean slate to avoid white screen
+                inject_beast_ui(driver, "SYNCHRONIZING HUB", timer_sec=5, mode="HUB")
                 time.sleep(5)
                 
-                # 2. PROMOTION (30s)
+                # PROMOTION (30s)
                 user = user_queue.pop(0)
                 name, url, author_id = user[0], user[1], user[2]
                 
-                log(f"🚀 SPOTLIGHT ON: {name}")
+                log(f"🌟 SPOTLIGHT: {name}")
                 driver.get(url)
-                time.sleep(5) 
-                inject_ui(driver, f"SPOTLIGHT: {name}", timer_sec=30, mode="PROMO")
+                time.sleep(5) # Wait for load
+                inject_beast_ui(driver, f"COMMUNITY SPOTLIGHT: {name}", timer_sec=30, mode="PROMO")
                 
                 total_promoted += 1
                 promoted_ids.add(author_id)
                 time.sleep(30)
                 
-                # Cooldown Thread
+                # 1 Minute Cooldown
                 threading.Timer(60, lambda: promoted_ids.discard(author_id)).start()
             else:
-                # IDLE HUB
-                driver.get(DASHBOARD_HTML)
-                inject_ui(driver, "NEURAL HUB IDLE", timer_sec=10, mode="HUB")
+                # IDLE HUB (Always show dashboard when queue empty)
+                driver.get("about:blank")
+                inject_beast_ui(driver, "STATION IDLE", timer_sec=10, mode="HUB")
                 time.sleep(10)
         except Exception as e:
-            log(f"Engine Glitch: {e}")
+            log(f"Controller Glitch: {e}")
             time.sleep(5)
 
-# --- 4. FFmpeg BROADCAST ENGINE ---
+# --- 4. BROADCAST ENGINE ---
 def stream_engine():
-    log("💀 Pumping 8000K Global Broadcast...")
+    log("💀 Pumping 8000K Bitrate to Worldwide Feed...")
     ffmpeg_cmd = [
         "ffmpeg", "-loglevel", "error", "-re",
         "-f", "x11grab", "-video_size", "1080x1920", "-i", ":99.0", 
