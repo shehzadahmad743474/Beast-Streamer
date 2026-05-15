@@ -24,28 +24,26 @@ current_media_id = ""
 def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
 
-# 1. GENERATE PHYSICAL LOBBY FILE (Anti-White Screen)
+# 1. GENERATE PHYSICAL LOBBY FILE (Patched UI)
 def create_lobby():
     html = """
-    <html><body style="background:#000; color:cyan; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin:0; border:30px solid cyan; box-sizing:border-box; overflow:hidden;">
-        <h1 style="font-size:120px; text-shadow:0 0 40px cyan; margin:0; font-weight:900;">BEAST HUB v17</h1>
-        <div style="background:rgba(0,255,255,0.1); padding:60px; border-radius:40px; border:5px solid white; margin-top:50px; text-align:center; width:90%;">
-            <p style="font-size:60px; color:yellow; margin:10px;">SYSTEM STATUS: <span style="color:lime;">ONLINE</span></p>
-            <p style="font-size:50px; color:white; margin:10px;">SCANNING CHAT FOR NEXT CREATOR...</p>
-            <hr style="border:1px solid #333; margin:40px 0;">
+    <html><body style="background:#050505; color:cyan; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin:0; border:20px solid cyan; box-sizing:border-box; overflow:hidden;">
+        <h1 style="font-size:80px; color:cyan; text-shadow:0 0 30px cyan; margin:0; font-weight:900;">BEAST STATION v19</h1>
+        <div style="background:rgba(255,255,255,0.05); padding:50px; border-radius:40px; border:3px solid #333; margin-top:40px; text-align:center; width:90%;">
             <div style="display:flex; justify-content:space-around; width:100%;">
-                <div style="font-size:40px;">PROMOTED:<br><span id="p-count" style="color:cyan; font-size:60px;">0</span></div>
-                <div style="font-size:40px;">QUEUED:<br><span id="q-count" style="color:cyan; font-size:60px;">0</span></div>
+                <div style="font-size:35px;">PROMOTIONS:<br><span id="p-count" style="color:gold; font-size:70px;">0</span></div>
+                <div style="font-size:35px;">IN QUEUE:<br><span id="q-count" style="color:lime; font-size:70px;">0</span></div>
             </div>
+            <p style="font-size:35px; color:white; margin-top:40px; border-top:2px solid #222; padding-top:30px;">🧬 SYSTEM STATUS: <span style="color:lime;">READY</span></p>
         </div>
     </body></html>
     """
     with open("lobby.html", "w") as f: f.write(html)
 
-# 2. CHAT SNIPER (V10 - RECOVERY MODE)
+# 2. CHAT SNIPER (V12 - MEDIA SEARCH BYPASS)
 def chat_sniper():
     global user_queue, current_media_id
-    log("💀 Sniper Matrix v17 Arming...")
+    log("💀 Sniper Matrix v19 Active...")
     while True:
         try:
             chat = pytchat.create(video_id=LIVE_VIDEO_ID, interruptable=False)
@@ -58,21 +56,23 @@ def chat_sniper():
                     if "!play " in msg:
                         q = msg.split("!play ")[1].strip()
                         try:
+                            # Direct yt-dlp search exploit
                             v_id = subprocess.check_output(["yt-dlp", "--get-id", f"ytsearch1:{q}"]).decode().strip()
-                            if v_id: current_media_id = v_id
+                            if v_id: 
+                                current_media_id = v_id
+                                log(f"🎵 MEDIA TARGET: {v_id}")
                         except: pass
                     
                     c_url = f"https://www.youtube.com/channel/{author_id}"
                     if author_id not in promoted_ids and not any(u[2] == author_id for u in user_queue):
                         user_queue.append([author_name, c_url, author_id])
-                        log(f"🧬 DETECTED: {author_name}")
+                        log(f"🧬 QUEUED: {author_name}")
             time.sleep(5)
         except: time.sleep(10)
 
-# 3. BEAST UI OVERLAY (v17 - MEGA SIZE)
+# 3. THE BEAST UI INJECTOR (v19 - PRECISE SCALING)
 def inject_ui(driver, title, timer=30, mode="PROMO"):
-    uptime = str(datetime.now() - session_start).split('.')[0]
-    q_html = "".join([f"<div style='margin-bottom:10px;'>⚡ {u[0]}</div>" for u in user_queue[:5]])
+    q_html = "".join([f"<div style='margin-bottom:8px;'>• {u[0]}</div>" for u in user_queue[:5]])
     
     ui_script = f"""
     (function() {{
@@ -86,39 +86,40 @@ def inject_ui(driver, title, timer=30, mode="PROMO"):
         // 🟢 NUCLEAR LOGO FIX
         if ("{mode}" == "PROMO") {{
             var head = document.getElementById('masthead-container');
-            if(head) head.style.display = "none";
-            var page = document.querySelector('ytd-app');
-            if(page) page.style.marginTop = "450px";
-            document.body.style.background = "#000";
+            if(head) head.remove(); // Forcefully delete the header
+            var app = document.querySelector('ytd-app');
+            if(app) app.style.marginTop = "320px";
+            document.body.style.paddingTop = "320px";
         }}
 
         var container = document.createElement('div');
         container.id = 'beast-ui';
-        container.style = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:2147483647; pointer-events:none; font-family:monospace;';
+        container.style = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:2147483647; pointer-events:none; font-family:Arial, sans-serif;';
         
         var content = `
             <style>
-                .top-plate {{ background:rgba(0,0,0,0.95); border-bottom:10px solid #00E5FF; height:350px; display:flex; flex-direction:column; justify-content:center; align-items:center; }}
-                .main-title {{ font-size: 7vw; color:white; font-weight:900; text-transform:uppercase; text-shadow: 0 0 30px cyan; }}
-                .timer-txt {{ font-size: 15vw; color:#FFFF00; font-weight:bold; line-height:1; }}
-                .side-panel {{ position:fixed; top:400px; left:20px; background:rgba(0,0,0,0.9); padding:40px; border-radius:30px; border-left:20px solid lime; width:500px; color:white; }}
-                .q-label {{ color:lime; font-size:5vw; font-weight:bold; border-bottom:4px solid #333; margin-bottom:20px; }}
-                .q-list {{ font-size:4vw; line-height:1.2; }}
-                .media-box {{ position:fixed; bottom:250px; right:20px; width:550px; height:350px; background:black; border:10px solid gold; border-radius:30px; overflow:hidden; display:{"block" if current_media_id else "none"}; }}
-                .footer-neon {{ position:fixed; bottom:0; width:100%; background:linear-gradient(90deg, #F00, #000, #F00); color:white; padding:40px; text-align:center; font-size:6vw; font-weight:bold; border-top:8px solid white; }}
+                .top-bar {{ background:rgba(0,0,0,0.9); border-bottom:6px solid #00E5FF; height:200px; display:flex; justify-content:space-between; align-items:center; }}
+                .status-txt {{ font-size:4.5vw; color:white; font-weight:bold; padding-left:40px; text-transform:uppercase; }}
+                .timer-txt {{ font-size:10vw; color:#FFFF00; font-weight:bold; padding-right:40px; font-family:monospace; }}
+                .side-panel {{ position:fixed; top:250px; left:20px; background:rgba(0,0,0,0.85); padding:25px; border-radius:20px; border-left:15px solid lime; width:400px; color:white; }}
+                .q-label {{ color:lime; font-size:3.5vw; font-weight:bold; margin-bottom:15px; border-bottom:2px solid #333; }}
+                .q-list {{ font-size:2.8vw; line-height:1.2; font-family:monospace; }}
+                .media-box {{ position:fixed; bottom:180px; right:20px; width:450px; height:280px; background:black; border:8px solid gold; border-radius:20px; overflow:hidden; pointer-events:auto; }}
+                .footer {{ position:fixed; bottom:0; width:100%; background:linear-gradient(90deg, red, black, red); color:white; padding:25px; text-align:center; font-size:4.5vw; font-weight:bold; border-top:5px solid white; }}
             </style>
-            <div class="top-plate">
-                <div class="main-title">{title}</div>
+            <div class="top-bar">
+                <div class="status-txt">{title}</div>
                 <div class="timer-txt" id="b-timer">{timer}s</div>
             </div>
             <div class="side-panel">
-                <div class="q-label">UP NEXT:</div>
+                <div class="q-label">QUEUED:</div>
                 <div class="q-list">{q_html}</div>
             </div>
-            <div class="media-box">
-                <iframe src="https://www.youtube.com/embed/{current_media_id}?autoplay=1&mute=1" style="width:100%; height:100%; border:none;"></iframe>
+            <div class="media-box" id="media-share-container" style='display:{"block" if current_media_id else "none"}'>
+                <div style="background:gold; color:black; font-weight:bold; padding:4px; font-size:1.8vw; text-align:center;">MEDIA SHARE</div>
+                <iframe id="media-frame" src="https://www.youtube.com/embed/{current_media_id}?autoplay=1&mute=1&controls=0&enablejsapi=1" style="width:100%; height:85%; border:none;"></iframe>
             </div>
-            <div class="footer-neon">🔥 LIKE THE STREAM TO JOIN 🔥</div>
+            <div class="footer">🚀 LIKE THE STREAM TO JOIN THE MATRIX 🚀</div>
         `;
         container.innerHTML = window.beastPolicy ? window.beastPolicy.createHTML(content) : content;
         document.body.appendChild(container);
@@ -135,10 +136,10 @@ def inject_ui(driver, title, timer=30, mode="PROMO"):
     try: driver.execute_script(ui_script)
     except: pass
 
-# 4. BROWSER CONTROLLER
+# 4. MASTER BROWSER CONTROLLER
 def browser_controller():
     global user_queue, promoted_ids, total_promoted
-    log("💀 Booting Neural Chrome...")
+    log("💀 Launching Neural Hub...")
     opts = webdriver.ChromeOptions()
     opts.add_argument('--no-sandbox')
     opts.add_argument('--disable-dev-shm-usage')
@@ -157,9 +158,9 @@ def browser_controller():
                 inject_ui(driver, "NEXT CREATOR...", timer=5, mode="HUB")
                 time.sleep(5)
                 
-                # Promo (30s)
+                # Promotion (30s)
                 u = user_queue.pop(0)
-                log(f"🚀 SPOTLIGHT: {u[0]}")
+                log(f"🌟 SPOTLIGHT: {u[0]}")
                 driver.get(u[1])
                 time.sleep(5)
                 inject_ui(driver, f"USER: {u[0]}", timer=30, mode="PROMO")
@@ -169,19 +170,20 @@ def browser_controller():
                 threading.Timer(60, lambda: promoted_ids.discard(u[2])).start()
             else:
                 driver.get(lobby_url)
-                inject_ui(driver, "STATION IDLE", timer=10, mode="HUB")
+                driver.execute_script(f"document.getElementById('p-count').innerText='{total_promoted}'; document.getElementById('q-count').innerText='{len(user_queue)}';")
+                inject_ui(driver, "SYSTEM IDLE", timer=10, mode="HUB")
                 time.sleep(10)
         except: time.sleep(5)
 
-# 5. STREAM ENGINE
+# 5. STREAM ENGINE (MAX POWER)
 def stream_engine():
-    log("💀 Pumping 8000K Zero-Latency Feed...")
+    log("💀 Pumping 8000K Worldwide Stream...")
     ffmpeg_cmd = [
         "ffmpeg", "-loglevel", "error", "-re",
         "-f", "x11grab", "-video_size", "1080x1920", "-i", ":99.0", 
         "-stream_loop", "-1", "-i", "bgm.mp3",                      
         "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency",
-        "-b:v", "8000k", "-maxrate", "8000k", "-bufsize", "3000k",
+        "-b:v", "8000k", "-maxrate", "8000k", "-bufsize", "4000k", 
         "-pix_fmt", "yuv420p", "-g", "60",
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",
         "-map", "0:v", "-map", "1:a", "-f", "flv", f"{YOUTUBE_RTMP}{STREAM_KEY}"
