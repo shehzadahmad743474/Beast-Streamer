@@ -1,4 +1,4 @@
-name: BeastGPT Queue Stream
+name: BeastGPT Virtual Screen Stream
 
 on:
   push:
@@ -19,11 +19,21 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Weapons
+      - name: Install System Weapons (Virtual Screen & FFmpeg)
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          pip install pytchat
+          sudo apt-get install -y xvfb ffmpeg fluxbox
 
-      - name: Run The Beast Engine
-        run: python main.py
+      - name: Install Python Weapons
+        run: |
+          pip install selenium pytchat yt-dlp webdriver-manager
+
+      - name: Download BGM (NoCopyrightSounds)
+        # Ye YouTube se ek NCS gaana download karega bgm.m4a ke naam se (No 403 error)
+        run: |
+          yt-dlp -f "bestaudio" -x --audio-format m4a -o "bgm.m4a" "https://www.youtube.com/watch?v=K4DyBUG242c"
+
+      - name: Run The Beast Virtual Engine
+        # xvfb-run ek nakli screen (Display 99) banata hai Vertical size (1080x1920) mein
+        run: |
+          xvfb-run -a -n 99 -s "-screen 0 1080x1920x24" python main.py
