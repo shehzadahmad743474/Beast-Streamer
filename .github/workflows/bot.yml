@@ -1,4 +1,4 @@
-name: BeastGPT Pro Promo Station
+name: BeastGPT Global Matrix Station
 
 on:
   push:
@@ -21,15 +21,15 @@ jobs:
       - name: Install System Weapons
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg wget
+          sudo apt-get install -y xvfb ffmpeg wget google-chrome-stable
 
       - name: Install Python Weapons
         run: |
           pip install selenium pytchat webdriver-manager
 
-      - name: Download High Quality BGM
+      - name: Download Matrix BGM
         run: |
-          wget -qO bgm.mp3 "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+          wget -qO bgm.mp3 "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3"
 
       - name: Run The Beast Engine
         run: |
