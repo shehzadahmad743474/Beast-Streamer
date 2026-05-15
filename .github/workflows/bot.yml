@@ -1,27 +1,29 @@
-name: BeastGPT 24/7 Streamer
+name: BeastGPT Interactive Live
 
 on:
-  workflow_dispatch:
+  push:
   schedule:
-    - cron: "0 */5 * * *" 
+    - cron: "0 */5 * * *"  # Auto-restart every 5 hours (GitHub limit 6 hours)
+  workflow_dispatch:      # Manual Start button
 
 jobs:
-  run-stream:
+  stream:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install FFmpeg & Python Libs
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Weapons (FFmpeg & Libs)
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install pytchat requests
+          pip install yt-dlp pytchat
 
       - name: Run The Beast Engine
-        env:
-          STREAM_KEY: ${{ secrets.STREAM_KEY }}
-          VIDEO_ID: ${{ secrets.VIDEO_ID }}
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}  # Ye nayi line hai!
-        run: |
-          python main.py
+        run: python main.py
