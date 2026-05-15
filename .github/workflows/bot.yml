@@ -1,10 +1,10 @@
-name: BeastGPT Interactive Live
+name: BeastGPT Queue Stream
 
 on:
   push:
   schedule:
-    - cron: "0 */5 * * *"  # Auto-restart every 5 hours (GitHub limit 6 hours)
-  workflow_dispatch:      # Manual Start button
+    - cron: "0 */5 * * *" 
+  workflow_dispatch:      
 
 jobs:
   stream:
@@ -19,11 +19,11 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Weapons (FFmpeg & Libs)
+      - name: Install Weapons
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install yt-dlp pytchat
+          pip install pytchat
 
       - name: Run The Beast Engine
         run: python main.py
