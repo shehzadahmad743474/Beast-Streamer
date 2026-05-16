@@ -11,10 +11,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install Weapons (Node, Xvfb, FFmpeg)
+      - name: Install Heavy Weapons & Graphics Engines
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg
+          # Install Virtual Screen, FFmpeg, and Canvas Build Tools
+          sudo apt-get install -y xvfb ffmpeg build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+          
           # Install Chrome manually for stability
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install ./google-chrome-stable_current_amd64.deb -y
@@ -24,14 +26,22 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Bot Modules
+      - name: Install Bot Modules (With Canvas)
         run: |
           npm init -y
-          npm install mineflayer prismarine-viewer
+          # Canvas is strictly required for 3D rendering on Headless Linux
+          npm install canvas mineflayer prismarine-viewer
 
       - name: Execute BeastGPT Stream Protocol
         env:
+          # YE SECRET TERI REPO SETTINGS MEIN HONA CHAHIYE
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
         run: |
+          # Agar key nahi hai toh script yahin rok do taaki FFmpeg crash na ho
+          if [ -z "$YOUTUBE_KEY" ]; then
+            echo "🔥 FATAL ERROR: YOUTUBE_KEY is missing! GitHub Repo ki Settings > Secrets mein jaake add kar!"
+            exit 1
+          fi
+          
           chmod +x stream.sh
           ./stream.sh
