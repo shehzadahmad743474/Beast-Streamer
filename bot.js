@@ -1,7 +1,8 @@
 const mineflayer = require('mineflayer');
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer');
 
-const TARGET_SERVER = 'topg.extremecraft.net'; // Try this or another cracked server
+// Agar ExtremeCraft me white screen rahe, to 'blocksmc.com' ya 'loyalsmp.com' try kar
+const TARGET_SERVER = 'topg.extremecraft.net'; 
 const BOT_NAME = 'Spectator_' + Math.floor(Math.random() * 9999);
 
 function createBot() {
@@ -12,12 +13,16 @@ function createBot() {
   });
 
   bot.once('spawn', () => {
-    bot.setControlState('jump', true);
     console.log('💀 Ghost Spawned!');
     
-    // Cracked servers ke liye login command (Agar zaroorat pade)
+    // Cracked servers login
     bot.chat('/register beastgpt123 beastgpt123');
     setTimeout(() => { bot.chat('/login beastgpt123'); }, 2000);
+
+    // BEASTGPT MOVEMENT HACK: Force Chunk Rendering!
+    // Bot ko lagatar aage chalao taaki game usko aas-paas ka map dikhaye
+    bot.setControlState('forward', true);
+    bot.setControlState('jump', true);
 
     try {
       mineflayerViewer(bot, { port: 3000, firstPerson: true });
@@ -26,6 +31,7 @@ function createBot() {
       console.log('Viewer already running.');
     }
 
+    // Stalking Logic
     setInterval(() => {
       const players = Object.keys(bot.players);
       if (players.length > 1) {
@@ -42,7 +48,6 @@ function createBot() {
   bot.on('kicked', (reason) => console.log('Kicked:', reason));
   bot.on('error', err => console.log('Error:', err));
   
-  // Auto-Reconnect Logic
   bot.on('end', () => {
     console.log('Bot Disconnected. Reconnecting in 10s...');
     setTimeout(createBot, 10000);
