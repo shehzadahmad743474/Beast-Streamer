@@ -1,7 +1,7 @@
 name: BeastGPT Shorts Streamer
 
 on:
-  workflow_dispatch: # Manual Start Button
+  workflow_dispatch:
 
 jobs:
   stream:
@@ -11,13 +11,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install Heavy Weapons & Graphics Engines
+      - name: Install Weapons
         run: |
           sudo apt-get update
-          # Install Virtual Screen, FFmpeg, and Canvas Build Tools
-          sudo apt-get install -y xvfb ffmpeg build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-          
-          # Install Chrome manually for stability
+          sudo apt-get install -y xvfb ffmpeg build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev wget
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install ./google-chrome-stable_current_amd64.deb -y
 
@@ -26,22 +23,18 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Bot Modules (With Canvas)
+      - name: Install Bot Modules
         run: |
           npm init -y
-          # Canvas is strictly required for 3D rendering on Headless Linux
           npm install canvas mineflayer prismarine-viewer
 
-      - name: Execute BeastGPT Stream Protocol
+      - name: Execute BeastGPT Audio-Video Stream Protocol
         env:
-          # YE SECRET TERI REPO SETTINGS MEIN HONA CHAHIYE
           YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
         run: |
-          # Agar key nahi hai toh script yahin rok do taaki FFmpeg crash na ho
           if [ -z "$YOUTUBE_KEY" ]; then
-            echo "🔥 FATAL ERROR: YOUTUBE_KEY is missing! GitHub Repo ki Settings > Secrets mein jaake add kar!"
+            echo "🔥 FATAL ERROR: YOUTUBE_KEY is missing!"
             exit 1
           fi
-          
           chmod +x stream.sh
           ./stream.sh
