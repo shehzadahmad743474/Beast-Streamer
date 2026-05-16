@@ -1,36 +1,51 @@
 const mineflayer = require('mineflayer');
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer');
 
-// YAHAN KISI BHI PUBLIC CRACKED SERVER KA IP DAAL
-const TARGET_SERVER = 'pika.host'; 
-const BOT_NAME = 'Spectator_007_' + Math.floor(Math.random() * 1000);
+const TARGET_SERVER = 'blocksmc.com'; // Try this or another cracked server
+const BOT_NAME = 'Spectator_' + Math.floor(Math.random() * 9999);
 
-const bot = mineflayer.createBot({
-  host: TARGET_SERVER,
-  username: BOT_NAME,
-  version: false // Auto-detect version
-});
+function createBot() {
+  const bot = mineflayer.createBot({
+    host: TARGET_SERVER,
+    username: BOT_NAME,
+    version: false 
+  });
 
-bot.once('spawn', () => {
-  console.log('💀 Ghost Spawned in Server!');
-  
-  // Start WebGL Renderer
-  mineflayerViewer(bot, { port: 3000, firstPerson: true });
-  console.log('[+] 3D Vision Activated on port 3000');
+  bot.once('spawn', () => {
+    console.log('💀 Ghost Spawned!');
+    
+    // Cracked servers ke liye login command (Agar zaroorat pade)
+    bot.chat('/register beastgpt123 beastgpt123');
+    setTimeout(() => { bot.chat('/login beastgpt123'); }, 2000);
 
-  // Har 30 second me kisi ko spectate karega
-  setInterval(() => {
-    const players = Object.keys(bot.players);
-    if (players.length > 1) {
-      let randomPlayer = players[Math.floor(Math.random() * players.length)];
-      if(randomPlayer !== bot.username && bot.players[randomPlayer].entity) {
-        console.log(`[Target Locked] Stalking: ${randomPlayer}`);
-        const targetEntity = bot.players[randomPlayer].entity;
-        bot.lookAt(targetEntity.position.offset(0, targetEntity.height, 0));
-      }
+    try {
+      mineflayerViewer(bot, { port: 3000, firstPerson: true });
+      console.log('[+] 3D Vision Activated');
+    } catch(e) {
+      console.log('Viewer already running.');
     }
-  }, 30000);
-});
 
-bot.on('error', err => console.log('Error:', err));
-bot.on('end', () => console.log('Bot Disconnected.'));
+    setInterval(() => {
+      const players = Object.keys(bot.players);
+      if (players.length > 1) {
+        let randomPlayer = players[Math.floor(Math.random() * players.length)];
+        if(randomPlayer !== bot.username && bot.players[randomPlayer].entity) {
+          console.log(`[Target] Stalking: ${randomPlayer}`);
+          const targetEntity = bot.players[randomPlayer].entity;
+          bot.lookAt(targetEntity.position.offset(0, targetEntity.height, 0));
+        }
+      }
+    }, 15000);
+  });
+
+  bot.on('kicked', (reason) => console.log('Kicked:', reason));
+  bot.on('error', err => console.log('Error:', err));
+  
+  // Auto-Reconnect Logic
+  bot.on('end', () => {
+    console.log('Bot Disconnected. Reconnecting in 10s...');
+    setTimeout(createBot, 10000);
+  });
+}
+
+createBot();
