@@ -1,36 +1,37 @@
-name: BeastGPT Global Matrix Station
+name: BeastGPT Shorts Streamer
 
 on:
-  push:
-  schedule:
-    - cron: "0 */5 * * *" 
-  workflow_dispatch:      
+  workflow_dispatch: # Manual Start Button
 
 jobs:
   stream:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install System Weapons
+      - name: Install Weapons (Node, Xvfb, FFmpeg)
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg wget google-chrome-stable
+          sudo apt-get install -y xvfb ffmpeg
+          # Install Chrome manually for stability
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome-stable_current_amd64.deb -y
 
-      - name: Install Python Weapons
-        run: |
-          pip install selenium pytchat webdriver-manager
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
 
-      - name: Download Matrix BGM
+      - name: Install Bot Modules
         run: |
-          wget -qO bgm.mp3 "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3"
+          npm init -y
+          npm install mineflayer prismarine-viewer
 
-      - name: Run The Beast Engine
+      - name: Execute BeastGPT Stream Protocol
+        env:
+          YOUTUBE_KEY: ${{ secrets.YOUTUBE_KEY }}
         run: |
-          xvfb-run -a -n 99 -s "-screen 0 1080x1920x24" python main.py
+          chmod +x stream.sh
+          ./stream.sh
