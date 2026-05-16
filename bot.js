@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer');
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer');
 
-const TARGET_SERVER = 'blocksmc.com'; // Try this or another cracked server
+const TARGET_SERVER = 'topg.extremecraft.net'; // Try this or another cracked server
 const BOT_NAME = 'Spectator_' + Math.floor(Math.random() * 9999);
 
 function createBot() {
