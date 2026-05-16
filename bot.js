@@ -1,9 +1,8 @@
 const mineflayer = require('mineflayer');
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer');
 
-// Agar ExtremeCraft me white screen rahe, to 'blocksmc.com' ya 'loyalsmp.com' try kar
 const TARGET_SERVER = 'topg.extremecraft.net'; 
-const BOT_NAME = 'Spectator_' + Math.floor(Math.random() * 9999);
+const BOT_NAME = 'Ghost_' + Math.floor(Math.random() * 99999);
 
 function createBot() {
   const bot = mineflayer.createBot({
@@ -13,25 +12,25 @@ function createBot() {
   });
 
   bot.once('spawn', () => {
-    console.log('💀 Ghost Spawned!');
+    console.log('💀 BeastGPT Ghost Spawned!');
     
-    // Cracked servers login
+    // Auto-Login for cracked servers
     bot.chat('/register beastgpt123 beastgpt123');
     setTimeout(() => { bot.chat('/login beastgpt123'); }, 2000);
 
-    // BEASTGPT MOVEMENT HACK: Force Chunk Rendering!
-    // Bot ko lagatar aage chalao taaki game usko aas-paas ka map dikhaye
+    // Force chunk loading
     bot.setControlState('forward', true);
     bot.setControlState('jump', true);
 
     try {
-      mineflayerViewer(bot, { port: 3000, firstPerson: true });
-      console.log('[+] 3D Vision Activated');
+      // 3D Viewer start kar rahe hain low render distance ke sath
+      mineflayerViewer(bot, { port: 3000, firstPerson: true, viewDistance: 4 });
+      console.log('[+] 3D Matrix Online');
     } catch(e) {
-      console.log('Viewer already running.');
+      console.log('Viewer running.');
     }
 
-    // Stalking Logic
+    // Spectator Logic
     setInterval(() => {
       const players = Object.keys(bot.players);
       if (players.length > 1) {
@@ -45,12 +44,12 @@ function createBot() {
     }, 15000);
   });
 
-  bot.on('kicked', (reason) => console.log('Kicked:', reason));
   bot.on('error', err => console.log('Error:', err));
+  bot.on('kicked', console.log);
   
   bot.on('end', () => {
-    console.log('Bot Disconnected. Reconnecting in 10s...');
-    setTimeout(createBot, 10000);
+    console.log('Bot Disconnected. Resurrecting in 5s...');
+    setTimeout(createBot, 5000);
   });
 }
 
