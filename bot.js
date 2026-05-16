@@ -12,6 +12,7 @@ function createBot() {
   });
 
   bot.once('spawn', () => {
+    bot.setControlState('jump', true);
     console.log('💀 Ghost Spawned!');
     
     // Cracked servers ke liye login command (Agar zaroorat pade)
